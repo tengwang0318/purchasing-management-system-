@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Inventory System - Inventory{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Inventory</h1>
+</div>
+
+<h3>Inventory medicine as follow:</h3>
+{% include '_inventory.html' %}
+
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, '.inventory') }}
+</div>
+{% endif %}
+
+{% endblock %}
+

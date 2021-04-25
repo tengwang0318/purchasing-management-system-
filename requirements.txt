@@ -1,0 +1,9 @@
+WTForms~=2.3.3
+Flask~=1.1.2
+SQLAlchemy~=1.4.7
+Faker~=8.1.0
+bleach~=3.3.0
+Werkzeug~=1.0.1
+itsdangerous~=1.1.0
+Markdown~=3.3.4
+click~=7.1.2

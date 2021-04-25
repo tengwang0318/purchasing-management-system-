@@ -1,0 +1,78 @@
+<ul class="posts">
+    {% for return_goods_item in return_goods_items %}
+    <li class="post">
+        <div class="post-thumbnail">
+            <a href="{{ url_for('.user', username=return_goods_item.author.username) }}">
+                <img class="img-rounded profile-thumbnail" src="{{ return_goods_item.author.gravatar(size=40) }}">
+            </a>
+        </div>
+        <div class="post-content">
+            <div class="post-date">{{ moment(return_goods_item.timestamp).fromNow() }}</div>
+            <div class="post-author"><a href="{{ url_for('.user', username=return_goods_item.author.username) }}">{{
+                return_goods_item.author.username }}</a></div>
+            <div class="post-body">
+                <table border="1" width="750">
+                    <tr>
+                        <td width="50">
+                            id:
+                            {% if return_goods_item.id %}
+                            {{ return_goods_item.id | safe }}
+                            {% else %}
+                            {{ return_goods_item.id }}
+                            {% endif %}
+                        </td>
+                        <td width="150">
+                            purchase_id:
+                            {% if return_goods_item.purchase_id %}
+                            {{ return_goods_item.purchase_id | safe }}
+                            {% else %}
+                            {{ return_goods_item.purchase_id }}
+                            {% endif %}
+                        </td>
+                        <td width="150">
+                            medicine_id:
+                            {% if Purchase.query.filter_by(id=return_goods_item.purchase_id).first().medicine_id %}
+                            {{ Purchase.query.filter_by(id=return_goods_item.purchase_id).first().medicine_id | safe }}
+                            {% else %}
+                            {{ Purchase.query.filter_by(id=return_goods_item.purchase_id).first().medicine_id }}
+                            {% endif %}
+                        </td>
+                        <td width="100">
+                            count:
+                            {% if Purchase.query.filter_by(id=return_goods_item.purchase_id).first().count %}
+                            {{ Purchase.query.filter_by(id=return_goods_item.purchase_id).first().count | safe }}
+                            {% else %}
+                            {{ Purchase.query.filter_by(id=return_goods_item.purchase_id).first().count }}
+                            {% endif %}
+                        </td>
+                        <td width="300">
+                            timestamp:
+                            {% if return_goods_item.timestamp %}
+                            {{ return_goods_item.timestamp | safe }}
+                            {% else %}
+                            {{ return_goods_item.timestamp }}
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                </table>
+            </div>
+            <div class="post-footer">
+                {% if current_user == return_goods_item.author %}
+                <a href="{{ url_for('.return_goods', id=return_goods_item.id) }}">
+                    <span class="label label-primary">Edit</span>
+                </a>
+                {% elif current_user.is_administrator() %}
+                <a href="{{ url_for('.return_goods', id=return_goods_item.id) }}">
+                    <span class="label label-danger">Edit [Admin]</span>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('.return_goods', id=return_goods_item.id) }}">
+                    <span class="label label-default">Permalink</span>
+                </a>
+
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
