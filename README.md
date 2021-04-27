@@ -5,6 +5,8 @@ Some drug materials are allocated to nursing homes and medical institutions thro
 
 To build "Home", "Profile", "Inventory", "Purchase", "Refund", "Storage", "Allocate" section to realize these functions. 
 
+User flask and sqlite to realise it. 
+
 There will show images about this System:
 
 ![picture1](image/picture1.png)
