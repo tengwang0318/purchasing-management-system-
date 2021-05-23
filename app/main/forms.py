@@ -1,10 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, BooleanField, SelectField, \
-    SubmitField
+from wtforms import StringField, TextAreaField, BooleanField, SelectField, SubmitField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, Regexp
 from wtforms import ValidationError
 from flask_pagedown.fields import PageDownField
-from ..models import Role, User, Purchase, Storage, Inventory
+from ..models import Role, User, Purchase, Storage, Inventory, Medicine
 
 
 class NameForm(FlaskForm):
@@ -61,27 +60,25 @@ class CommentForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
-# class InventoryForm(FlaskForm):
-#     body = StringField("What are you looking for? please enter the medicine_id, if you want to check more than one "
-#                        "category medicine, please use semicolon to split different medicine_id.(such as 0001;0002;0003)")
-#     submit = SubmitField("Submit")
-
-
-# class InventoryPurchaseForm(FlaskForm):
-#     medicine_id = StringField("Which kind of goods? Enter the medicine_id", validators=[DataRequired()])
-#     count = StringField("What is the count about medicine")
-
-
 class PurchaseForm(FlaskForm):
-    medicine_id = StringField("Enter the medicine id")
-    count = StringField("Enter the count")
+    medicine_id = StringField("Enter the medicine id", validators=[DataRequired()])
+    count = StringField("Enter the count", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+    def validate_count(self, field):
+        try:
+            field.data = int(field.data)
+        except TypeError:
+            raise ValidationError("Please enter the correct count")
+
+    def validate_medicine_id(self, field):
+        medicine = Medicine.query.filter_by(medicine_id=field.data).first()
+        if not medicine:
+            raise ValidationError("Please enter the correct medicine id from Medicine Table ")
 
 
 class RefundForm(FlaskForm):
     purchase_id = StringField("Enter the previous purchase id", validators=[DataRequired()])
-    # medicine_id = StringField("Enter the medicine id", validators=[DataRequired()])
-    # count = StringField("Enter the count", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
     def validate_purchase_id(self, field):
@@ -125,3 +122,24 @@ class AllocateForm(FlaskForm):
             raise ValidationError("We don't have this medicine in warehouse!")
         if truncation.count < int(field.data):
             raise ValidationError("We don't have enough medicine. ")
+
+
+class AccountForm(FlaskForm):
+    start_year = IntegerField("Start Year:", validators=[DataRequired()])
+    start_month = IntegerField("Start Month:", validators=[DataRequired()])
+    start_day = IntegerField("Start Day:", validators=[DataRequired()])
+    end_year = IntegerField("End Year:", validators=[DataRequired()])
+    end_month = IntegerField("End Month:", validators=[DataRequired()])
+    end_day = IntegerField("End Day:", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class InventoryWarningForm(FlaskForm):
+    medicine_id = IntegerField("Enter medicine id:", validators=[DataRequired()])
+    warning_count = IntegerField("Enter medicine inventory warning:", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+    def validate_medicine_id(self, field):
+        truncation = Inventory.query.filter_by(medicine_id=self.medicine_id.data).first()
+        if not truncation:
+            raise ValidationError("We don't have this medicine in warehouse!")

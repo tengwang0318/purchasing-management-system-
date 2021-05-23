@@ -1,0 +1,46 @@
+<ul class="posts">
+    <table class="styled-table" border="1" width="950">
+        <thead>
+        <tr>
+            <th>medicine_id</th>
+            <th>medicine_name</th>
+            <th>medicine_type</th>
+            <th>medicine_factory</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for medicine_item in medicine_items %}
+        <tr>
+            <td width="100">
+                {% if medicine_item.medicine_id %}
+                {{ medicine_item.medicine_id | safe }}
+                {% else %}
+                {{ medicine_item.medicine_id }}
+                {% endif %}
+            </td>
+            <td width="250">
+                {% if medicine_item.medicine_name %}
+                {{ medicine_item.medicine_name| safe }}
+                {% else %}
+                {{ medicine_item.medicine_name }}
+                {% endif %}
+            </td>
+            <td width="200">
+                {% if medicine_item.medicine_type %}
+                {{ medicine_item.medicine_type| safe }}
+                {% else %}
+                {{ medicine_item.medicine_type }}
+                {% endif %}
+            </td>
+            <td>
+                {% if medicine_item.medicine_factory %}
+                {{ medicine_item.medicine_factory| safe }}
+                {% else %}
+                {{ medicine_item.medicine_factory }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</ul>

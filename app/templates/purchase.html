@@ -16,11 +16,6 @@
 <h3>Purchase Orders as follow:</h3>
 {% include '_purchase.html' %}
 
-{% if pagination %}
-<div class="pagination">
-    {{ macros.pagination_widget(pagination, '.purchase') }}
-</div>
-{% endif %}
 
 {% endblock %}
 

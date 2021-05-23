@@ -1,11 +1,14 @@
+import datetime
+
 from flask import render_template, redirect, url_for, abort, flash, request, \
     current_app, make_response
 from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm, PurchaseForm, RefundForm, StorageForm, \
-    AllocateForm
+    AllocateForm, AccountForm, InventoryWarningForm
 from .. import db
-from ..models import Permission, Role, User, Post, Comment, Inventory, Purchase, Refund, Storage, Allocate
+from ..models import Permission, Role, User, Post, Comment, Inventory, Purchase, Refund, Storage, Allocate, Medicine, \
+    Warning
 from ..decorators import admin_required, permission_required
 
 
@@ -332,10 +335,21 @@ def storage():
             temp_query.count += int(query.count)
             # inventory_item = Inventory(medicine_id=query.medicine_id, count=query.count + temp_query.count)
         else:
-            temp_query = Inventory(medicine_id=query.medicine_id, count=query.count)
+            medicine_feature = Medicine.query.filter_by(medicine_id=query.medicine_id).first()
+            temp_query = Inventory(medicine_id=query.medicine_id, medicine_name=medicine_feature.medicine_name,
+                                   medicine_type=medicine_feature.medicine_type, count=query.count)
         db.session.add(temp_query)
         db.session.add(query)
         db.session.commit()
+
+        # warning check
+        warning_items = Warning.query.filter_by(medicine_id=query.medicine_id).first()
+        if warning_items:
+            warning_items.count = temp_query.count
+            warning_items.warning = warning_items.count < warning_items.warning_count
+            db.session.add(warning_items)
+            db.session.commit()
+
         return redirect(url_for('.storage'))
     page = request.args.get('page', 1, type=int)
     pagination = Storage.query.order_by(Storage.timestamp.desc()).paginate(
@@ -370,8 +384,21 @@ def allocate():
 
         query = Inventory.query.filter_by(medicine_id=form.medicine_id.data).first()
         query.count -= int(form.count.data)
-        db.session.add(query)
-        db.session.commit()
+        query = Inventory.query.filter_by(medicine_id=form.medicine_id.data).first()
+        if query.count == 0:
+            db.session.delete(query)
+            db.session.commit()
+        else:
+            db.session.add(query)
+            db.session.commit()
+
+        warning_items = Warning.query.filter_by(medicine_id=form.medicine_id.data).first()
+        if warning_items:
+            warning_items.count = Inventory.query.filter_by(medicine_id=form.medicine_id.data).first().count
+            warning_items.warning = warning_items.count < warning_items.warning_count
+            db.session.add(warning_items)
+            db.session.commit()
+
         return redirect(url_for('.allocate'))
     page = request.args.get('page', 1, type=int)
     pagination = Allocate.query.order_by(Allocate.timestamp.desc()).paginate(
@@ -379,3 +406,65 @@ def allocate():
         error_out=False)
     allocate_items = pagination.items
     return render_template('allocate.html', form=form, allocate_items=allocate_items, pagination=pagination)
+
+
+@main.route("/account", methods=["GET", "POST"])
+@login_required
+def account():
+    form = AccountForm()
+    if current_user.can(Permission.WRITE) and form.validate_on_submit():
+        start_year, start_month, start_day = form.start_year.data, form.start_month.data, form.start_day.data
+        end_year, end_month, end_day = form.end_year.data, form.end_month.data, form.end_day.data
+        start_time = datetime.date(year=start_year, month=start_month, day=start_day)
+        end_time = datetime.date(year=end_year, month=end_month, day=end_day)
+        # purchase_query = db.session.query(Purchase).filter(Purchase.timestamp <= end_time).all()
+        purchase_query = Purchase.query.filter(Purchase.timestamp <= end_time).filter(
+            Purchase.timestamp >= start_time).all()
+        return_query = Refund.query.filter(Refund.timestamp <= end_time).filter(Refund.timestamp >= start_time).all()
+        storage_query = Storage.query.filter(Storage.timestamp <= end_time).filter(
+            Storage.timestamp >= start_time).all()
+        allocate_query = Allocate.query.filter(Allocate.timestamp <= end_time).filter(
+            Allocate.timestamp >= start_time).all()
+        return render_template('account.html', form=form, purchase_query=purchase_query, return_query=return_query,
+                               storage_query=storage_query, allocate_query=allocate_query, Purchase=Purchase)
+    return render_template('account.html', form=form)
+
+
+@main.route("/medicine", methods=['GET', "POST"])
+@login_required
+def medicine():
+    page = request.args.get('page', 1, type=int)
+    pagination = Medicine.query.order_by(Medicine.medicine_id.asc()).paginate(
+        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False)
+    medicine_items = pagination.items
+    return render_template('medicine.html', medicine_items=medicine_items, pagination=pagination)
+
+
+@main.route("/warning", methods=['GET', "POST"])
+@login_required
+def warning():
+    form = InventoryWarningForm()
+    if current_user.can(Permission.WRITE) and form.validate_on_submit():
+        query = Warning.query.filter_by(medicine_id=form.medicine_id.data).first()
+        if not query:
+            warning_items = Warning(medicine_id=form.medicine_id.data,
+                                    count=Inventory.query.filter_by(medicine_id=form.medicine_id.data).first().count,
+                                    warning_count=form.warning_count.data,
+                                    warning=Inventory.query.filter_by(
+                                        medicine_id=form.medicine_id.data).first().count < form.warning_count.data)
+            db.session.add(warning_items)
+            db.session.commit()
+        else:
+            query.warning_count = form.warning_count.data
+            query.warning = Inventory.query.filter_by(
+                medicine_id=form.medicine_id.data).first().count < form.warning_count.data
+            db.session.add(query)
+            db.session.commit()
+        return redirect(url_for('.warning'))
+    page = request.args.get('page', 1, type=int)
+    pagination = Warning.query.order_by(Warning.medicine_id.desc()).paginate(
+        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False)
+    warning_items = pagination.items
+    return render_template('warning.html', form=form, warning_items=warning_items, pagination=pagination)

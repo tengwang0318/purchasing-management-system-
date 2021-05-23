@@ -7,6 +7,7 @@
 <link rel="shortcut icon" href="{{ url_for('static', filename='icon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='icon.ico') }}" type="image/x-icon">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='tablecss.css') }}">
 {% endblock %}
 
 {% block navbar %}
@@ -31,6 +32,9 @@
                 <li><a href="{{ url_for('main.return_goods')}}">Refund</a></li>
                 <li><a href="{{ url_for('main.storage') }} ">Storage</a></li>
                 <li><a href="{{ url_for('main.allocate') }}">Allocate</a></li>
+                <li><a href="{{ url_for('main.medicine')}}">Medicine</a></li>
+                <li><a href="{{ url_for('main.account')}}">Account</a></li>
+                <li><a href="{{ url_for('main.warning')}}">Warning</a></li>
 
                 {% endif %}
 

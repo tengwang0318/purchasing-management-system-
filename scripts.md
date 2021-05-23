@@ -1,5 +1,6 @@
 ```python
 Role.insert_roles()
+Medicine.insert_medicine()
 admin_role = Role.query.filter_by(name="Administrator").first()
 default_role = Role.query.filter_by(default=True).first()
 for u in User.query.all():
@@ -14,4 +15,6 @@ for u in User.query.all():
 ```python
 db.session.commit()
 ```
+```python
 
+```

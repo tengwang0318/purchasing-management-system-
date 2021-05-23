@@ -1,0 +1,53 @@
+<ul class="posts">
+    <table class="styled-table" border="1" width="950">
+        <thead>
+        <tr>
+            <th>medicine id</th>
+            <th>count</th>
+            <th>warning count</th>
+            <th>warning</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for warning_item in warning_items %}
+        <tr>
+            <td width="50">
+                {% if warning_item.medicine_id %}
+                {{ warning_item.medicine_id | safe }}
+                {% else %}
+                {{ warning_item.medicine_id }}
+                {% endif %}
+            </td>
+            <td width="100">
+
+                {% if warning_item.count %}
+                {{ warning_item.count| safe }}
+                {% else %}
+                {{ warning_item.count }}
+                {% endif %}
+            </td>
+            <td width="100">
+
+                {% if warning_item.warning_count %}
+                {{ warning_item.warning_count| safe }}
+                {% else %}
+                {{ warning_item.warning_count }}
+                {% endif %}
+            </td>
+
+            <td class="inventory_warning" width="100">
+                {% if warning_item.warning == True %}
+                <font color="red">
+                    {{ warning_item.warning|safe }}
+                </font>
+                {% else %}
+
+                {{ warning_item.warning|safe}}
+                {% endif %}
+            </td>
+
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</ul>

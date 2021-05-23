@@ -1,97 +1,74 @@
 <ul class="posts">
-    {% for purchase in purchases %}
-    <li class="post">
-        <div class="post-thumbnail">
-            <a href="{{ url_for('.user', username=purchase.author.username) }}">
-                <img class="img-rounded profile-thumbnail" src="{{ purchase.author.gravatar(size=40) }}">
-            </a>
-        </div>
-        <div class="post-content">
-            <div class="post-date">{{ moment(purchase.timestamp).fromNow() }}</div>
-            <div class="post-author"><a href="{{ url_for('.user', username=purchase.author.username) }}">{{
-                purchase.author.username }}</a></div>
-            <div class="post-body">
-                <table border="1" width="950">
-                    <tr>
-                        <td width="50">
-                            id:
-                            {% if purchase.id %}
-                            {{ purchase.id | safe }}
-                            {% else %}
-                            {{ purchase.id }}
-                            {% endif %}
-                        </td>
-                        <td width="100">
-                            user_id:
-                            {% if purchase.user_id %}
-                            {{ purchase.user_id | safe }}
-                            {% else %}
-                            {{ purchase.user_id }}
-                            {% endif %}
-                        </td>
-                        <td width="150">
-                            medicine_id:
-                            {% if purchase.medicine_id %}
-                            {{ purchase.medicine_id | safe }}
-                            {% else %}
-                            {{ purchase.medicine_id }}
-                            {% endif %}
-                        </td>
-                        <td width="100">
-                            count:
-                            {% if purchase.count %}
-                            {{ purchase.count | safe }}
-                            {% else %}
-                            {{ purchase.count }}
-                            {% endif %}
-                        </td>
+    <table class="styled-table" border="1" width="950">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>user_id</th>
+            <th>medicine_id</th>
+            <th>count</th>
+            <th>timestamp</th>
+            <th>refund</th>
+            <th>Put in storage</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for purchase in purchases %}
 
-                        <td width="300">
-                            timestamp:
-                            {% if purchase.timestamp %}
-                            {{ purchase.timestamp | safe }}
-                            {% else %}
-                            {{ purchase.timestamp }}
-                            {% endif %}
-                        </td>
-
-                        <td width="100">
-                            refund:
-                            {% if purchase.return_goods %}
-                            {{ purchase.return_goods | safe }}
-                            {% else %}
-                            {{ purchase.return_goods }}
-                            {% endif %}
-
-                        </td>
-                        <td width="150">
-                            Put in storage:
-                            {% if purchase.have_storage %}
-                            {{ purchase.have_storage | safe }}
-                            {% else %}
-                            {{ purchase.have_storage }}
-                            {% endif %}
-                        </td>
-
-                    </tr>
-                </table>
-            </div>
-            <div class="post-footer">
-                {% if current_user == purchase.author %}
-                <a href="{{ url_for('.purchase', id=purchase.id) }}">
-                    <span class="label label-primary">Edit</span>
-                </a>
-                {% elif current_user.is_administrator() %}
-                <a href="{{ url_for('.purchase', id=purchase.id) }}">
-                    <span class="label label-danger">Edit [Admin]</span>
-                </a>
+        <tr>
+            <td width="50">
+                {% if purchase.id %}
+                {{ purchase.id | safe }}
+                {% else %}
+                {{ purchase.id }}
                 {% endif %}
-                <a href="{{ url_for('.purchase', id=purchase.id) }}">
-                    <span class="label label-default">Permalink</span>
-                </a>
+            </td>
+            <td width="100">
+                {% if purchase.user_id %}
+                {{ purchase.user_id | safe }}
+                {% else %}
+                {{ purchase.user_id }}
+                {% endif %}
+            </td>
+            <td width="150">
+                {% if purchase.medicine_id %}
+                {{ purchase.medicine_id | safe }}
+                {% else %}
+                {{ purchase.medicine_id }}
+                {% endif %}
+            </td>
+            <td width="100">
+                {% if purchase.count %}
+                {{ purchase.count | safe }}
+                {% else %}
+                {{ purchase.count }}
+                {% endif %}
+            </td>
 
-            </div>
-        </div>
-    </li>
-    {% endfor %}
+            <td width="300">
+                {% if purchase.timestamp %}
+                {{ purchase.timestamp | safe }}
+                {% else %}
+                {{ purchase.timestamp }}
+                {% endif %}
+            </td>
+
+            <td width="100">
+                {% if purchase.return_goods %}
+                {{ purchase.return_goods | safe }}
+                {% else %}
+                {{ purchase.return_goods }}
+                {% endif %}
+
+            </td>
+            <td width="150">
+                {% if purchase.have_storage %}
+                {{ purchase.have_storage | safe }}
+                {% else %}
+                {{ purchase.have_storage }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </ul>

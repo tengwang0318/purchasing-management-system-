@@ -1,79 +1,55 @@
 <ul class="posts">
-    {% for allocate_item in allocate_items %}
-    <li class="post">
-        <div class="post-thumbnail">
-            <a href="{{ url_for('.user', username=allocate_item.author.username) }}">
-                <img class="img-rounded profile-thumbnail" src="{{ allocate_item.author.gravatar(size=40) }}">
-            </a>
-        </div>
-        <div class="post-content">
-            <div class="post-date">{{ moment(allocate_item.timestamp).fromNow() }}</div>
-            <div class="post-author"><a href="{{ url_for('.user', username=allocate_item.author.username) }}">{{
-                allocate_item.author.username }}</a></div>
-            <div class="post-body">
-                <table border="1" width="750">
-                    <tr>
-                        <td width="100">
-                            id:
-                            {% if allocate_item.id %}
-                            {{ allocate_item.id | safe }}
-                            {% else %}
-                            {{ allocate_item.id }}
-                            {% endif %}
-                        </td>
-                        <td width="150">
-                            purchase_id:
-                            {% if allocate_item.receiver %}
-                            {{ allocate_item.receiver | safe }}
-                            {% else %}
-                            {{ allocate_item.receiver }}
-                            {% endif %}
-                        </td>
-                        <td width="200">
-                            medicine_id:
-                            {% if allocate_item.medicine_id %}
-                            {{ allocate_item.medicine_id | safe }}
-                            {% else %}
-                            {{ allocate_item.medicine_id }}
-                            {% endif %}
-                        </td>
-                        <td width="150">
-                            count:
-                            {% if allocate_item.count %}
-                            {{ allocate_item.count | safe }}
-                            {% else %}
-                            {{ allocate_item.count }}
-                            {% endif %}
-                        </td>
-
-                        <td width="350">
-                            timestamp:
-                            {% if allocate_item.timestamp %}
-                            {{ allocate_item.timestamp | safe }}
-                            {% else %}
-                            {{ allocate_item.timestamp }}
-                            {% endif %}
-                        </td>
-
-                    </tr>
-                </table>
-            </div>
-            <div class="post-footer">
-                {% if current_user == allocate_item.author %}
-                <a href="{{ url_for('.return_goods', id=allocate_item.id) }}">
-                    <span class="label label-primary">Edit</span>
-                </a>
-                {% elif current_user.is_administrator() %}
-                <a href="{{ url_for('.return_goods', id=allocate_item.id) }}">
-                    <span class="label label-danger">Edit [Admin]</span>
-                </a>
+    <table class="styled-table" border="1" width="750">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>receiver_id</th>
+            <th>medicine_id</th>
+            <th>count</th>
+            <th>timestamp</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for allocate_item in allocate_items %}
+        <tr>
+            <td width="100">
+                {% if allocate_item.id %}
+                {{ allocate_item.id | safe }}
+                {% else %}
+                {{ allocate_item.id }}
                 {% endif %}
-                <a href="{{ url_for('.return_goods', id=allocate_item.id) }}">
-                    <span class="label label-default">Permalink</span>
-                </a>
+            </td>
+            <td width="150">
+                {% if allocate_item.receiver %}
+                {{ allocate_item.receiver | safe }}
+                {% else %}
+                {{ allocate_item.receiver }}
+                {% endif %}
+            </td>
+            <td width="200">
+                {% if allocate_item.medicine_id %}
+                {{ allocate_item.medicine_id | safe }}
+                {% else %}
+                {{ allocate_item.medicine_id }}
+                {% endif %}
+            </td>
+            <td width="150">
+                {% if allocate_item.count %}
+                {{ allocate_item.count | safe }}
+                {% else %}
+                {{ allocate_item.count }}
+                {% endif %}
+            </td>
 
-            </div>
-        </div>
-    </li>
-    {% endfor %}
+            <td width="350">
+                {% if allocate_item.timestamp %}
+                {{ allocate_item.timestamp | safe }}
+                {% else %}
+                {{ allocate_item.timestamp }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </ul>

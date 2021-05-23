@@ -1,33 +1,52 @@
 <ul class="posts">
-    {% for inventory_item in inventory_items %}
-    <li class="post">
-        <div class="post-content">
-            <div class="post-body">
-                <table border="1" width="950">
-                    <tr>
-                        <td width="50">
-                            medicine_id:
-                            {% if inventory_item.medicine_id %}
-                            {{ inventory_item.medicine_id | safe }}
-                            {% else %}
-                            {{ inventory_item.medicine_id }}
-                            {% endif %}
-                        </td>
-                        <td width="100">
-                            count:
-                            {% if inventory_item.count %}
-                            {{ inventory_item.count| safe }}
-                            {% else %}
-                            {{ inventory_item.count }}
-                            {% endif %}
-                        </td>
+    <table class="styled-table" border="1" width="950">
+        <thead>
+        <tr>
+            <th>medicine id</th>
+            <th>medicine name</th>
+            <th>medicine classes</th>
+            <th>count</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for inventory_item in inventory_items %}
+        <tr>
+            <td width="50">
 
+                {% if inventory_item.medicine_id %}
+                {{ inventory_item.medicine_id | safe }}
+                {% else %}
+                {{ inventory_item.medicine_id }}
+                {% endif %}
+            </td>
+            <td width="100">
 
-                    </tr>
-                </table>
-            </div>
+                {% if inventory_item.medicine_name %}
+                {{ inventory_item.medicine_name| safe }}
+                {% else %}
+                {{ inventory_item.medicine_name }}
+                {% endif %}
+            </td>
+            <td width="100">
 
-        </div>
-    </li>
-    {% endfor %}
+                {% if inventory_item.medicine_type %}
+                {{ inventory_item.medicine_type| safe }}
+                {% else %}
+                {{ inventory_item.medicine_type }}
+                {% endif %}
+            </td>
+
+            <td width="100">
+
+                {% if inventory_item.count %}
+                {{ inventory_item.count| safe }}
+                {% else %}
+                {{ inventory_item.count }}
+                {% endif %}
+            </td>
+
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </ul>

@@ -310,6 +310,8 @@ db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 class Inventory(db.Model):
     __tablename__ = "inventory"
     medicine_id = db.Column(db.Integer, primary_key=True)
+    medicine_name = db.Column(db.String)
+    medicine_type = db.Column(db.String)
     count = db.Column(db.Integer, default=0)
 
     #
@@ -375,3 +377,30 @@ class Allocate(db.Model):
     count = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+
+class Medicine(db.Model):
+    __tablename__ = "Medicine"
+    medicine_id = db.Column(db.Integer, primary_key=True)
+    medicine_name = db.Column(db.String)
+    medicine_type = db.Column(db.String)
+    medicine_factory = db.Column(db.String)
+
+    @staticmethod
+    def insert_medicine():
+        medicine_id = [1, 2, 3, 4, 5]
+        medicine_name = ["999感冒灵", "罗红霉素胶囊", "清热解毒口服液", "板蓝根", "夏桑菊"]
+        medicine_type = ['感冒药', '消炎药', '清热去火', '清热去火', '清热去火']
+        medicine_factory = ['华润三九医药股份有限公司', '山东鲁抗辰欣医药有限公司', '河南宛西制药有限公司', '河南宛西制药有限公司', '河南宛西制药有限公司']
+
+        for id, name, type, factory in zip(medicine_id, medicine_name, medicine_type, medicine_factory):
+            db.session.add(Medicine(medicine_id=id, medicine_name=name, medicine_type=type, medicine_factory=factory))
+        db.session.commit()
+
+
+class Warning(db.Model):
+    __tablename__ = "Warning"
+    medicine_id = db.Column(db.Integer, primary_key=True)
+    count = db.Column(db.Integer)
+    warning_count = db.Column(db.Integer)
+    warning = db.Column(db.Boolean,default=False)
